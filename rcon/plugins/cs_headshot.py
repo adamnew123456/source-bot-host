@@ -24,7 +24,7 @@ def init(rcon, logger, _):
         elif b'" say "' in message and b'"!headshots' in message:
             requester_long, query = list(util.get_quoted_strings(message))
             if query.strip() == b'!headshots':
-                who , _, _, _ = util.parse_player_info(requester_info)
+                who , _, _, _ = util.parse_player_info(requester_long)
             else:
                 try:
                     who = query.split(maxsplit=1)[1]

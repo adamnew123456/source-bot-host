@@ -83,7 +83,7 @@ if __name__ == '__main__':
             # phrase=That is an ex-parrot!
             plugin_config_name = 'plugins_' + plugin
 
-            if plugin_config_name in in config:
+            if plugin_config_name in config:
                 plugin_config = config['plugins_' + plugin]
             else:
                 plugin_config = None
