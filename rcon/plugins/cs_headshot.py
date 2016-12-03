@@ -8,6 +8,10 @@ Configuration Options
     # (OPTIONAL) When to reset headshots. Can be either 'map', 'round' or 'never'.
     # Defaults to 'never'.
     when_reset=never
+
+    # (OPTIONAL) Whether to track bots or not. Can be either 'yes' or 'no'.
+    # Defaults to 'no'.
+    count_bots=no
 """
 from collections import defaultdict
 
@@ -16,9 +20,15 @@ from .. import util
 def init(rcon, logger, config):
     headshots = {}
     reset_policy = config.get('when_reset', 'never')
+    count_bots = config.get('count_bots', 'no')
 
     if reset_policy not in ('never', 'round', 'map'):
         raise ValueError('when_reset option of [config_cs_headshot] must be either never, round or map')
+
+    if count_bots not in ('yes', 'no'):
+        raise ValueError('count_bots option of [config_cs_headshot] must be either yes or no')
+
+    count_bots = count_bots == 'yes'
 
     @logger.register
     def on_message(timestamp, message):
@@ -27,7 +37,10 @@ def init(rcon, logger, config):
 
         if b'(headshot)' in message:
             killer_long, _, _ = list(util.get_quoted_strings(message))
-            killer, _, _, _ = util.parse_player_info(killer_long)
+            killer, _, player_type, _ = util.parse_player_info(killer_long)
+
+            if player_type == b'BOT' and not count_bots:
+                return
 
             if killer not in headshots:
                 headshots[killer] = 0
