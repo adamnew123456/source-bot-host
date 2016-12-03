@@ -1,12 +1,24 @@
 """
 A plugin which tracks the number of headshots by each player.
+
+Configuration Options
+=====================
+
+    [plugin_cs_headshots]
+    # (OPTIONAL) When to reset headshots. Can be either 'map', 'round' or 'never'.
+    # Defaults to 'never'.
+    when_reset=never
 """
 from collections import defaultdict
 
 from .. import util
 
-def init(rcon, logger, _):
+def init(rcon, logger, config):
     headshots = {}
+    reset_policy = config.get('when_reset', 'never')
+
+    if reset_policy not in ('never', 'round', 'map'):
+        raise ValueError('when_reset option of [config_cs_headshot] must be either never, round or map')
 
     @logger.register
     def on_message(timestamp, message):
@@ -37,3 +49,7 @@ def init(rcon, logger, _):
                     rcon.execute_command('say [HEADSHOTS] {} has {}'.format(player.decode('ascii'), headshots.get(player, 0)))
             else:
                 rcon.execute_command('say [HEADSHOTS] {} has {}'.format(who.decode('ascii'), headshots.get(who, 0)))
+        elif reset_policy == 'round' and message == b'World triggered "Round_Start"':
+            headshots = {}
+        elif reset_policy == 'map' and message.startswith(b'Started map'):
+            headshots = {}
