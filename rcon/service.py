@@ -86,7 +86,7 @@ if __name__ == '__main__':
             if plugin_config_name in config:
                 plugin_config = config['plugins_' + plugin]
             else:
-                plugin_config = None
+                plugin_config = {}
 
             logger.info('Launching plugin %s', plugin)
             plugin_module = importlib.import_module(
