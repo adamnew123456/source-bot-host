@@ -32,6 +32,7 @@ def init(rcon, logger, config):
 
     @logger.register
     def on_message(timestamp, message):
+        nonlocal headshots
         if message is None:
             return
 
